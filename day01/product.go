@@ -56,16 +56,24 @@ func findTrebleSum(nums []int, sum int) ([]int, error) {
 	return nil, errors.New("no treble found")
 }
 
-func main() {
+func fetchInput() ([]int, error) {
 	lines, err := util.ReadInput("input.txt")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	nums, err := convertToInts(lines)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	sort.Ints(nums)
+	return nums, nil
+}
+
+func main() {
+	nums, err := fetchInput()
+	if err != nil {
+		log.Fatal(err)
+	}
 	factors, err := findTrebleSum(nums, 2020)
 	if err != nil {
 		log.Fatal(err)
