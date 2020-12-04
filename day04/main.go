@@ -23,10 +23,11 @@ func parseInput(s string) ([]document, error) {
 		if line == "" {
 			docs = append(docs, cur)
 			cur = make(document)
+			continue
 		}
-		matches := lineRe.FindAllSubmatch([]byte(line), -1)
+		matches := lineRe.FindAllStringSubmatch(line, -1)
 		for _, match := range matches {
-			key, val := string(match[1]), string(match[2])
+			key, val := match[1], match[2]
 			cur[key] = val
 		}
 	}
