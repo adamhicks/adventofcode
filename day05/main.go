@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func parseAddress(s string) int {
+func parseBinary(s string) int {
 	var a int
 	for _, r := range s {
 		a <<= 1
@@ -17,17 +17,6 @@ func parseAddress(s string) int {
 		}
 	}
 	return a
-}
-
-func parseSeat(s string) (int, int) {
-	row := parseAddress(s[:7])
-	col := parseAddress(s[7:])
-	return row, col
-}
-
-func getSeatID(s string) int {
-	row, col := parseSeat(s)
-	return row*8 + col
 }
 
 func runPartOne() error {
@@ -40,7 +29,7 @@ func runPartOne() error {
 		if l == "" {
 			continue
 		}
-		sID := getSeatID(l)
+		sID := parseBinary(l)
 		if sID > max {
 			max = sID
 		}
@@ -61,7 +50,7 @@ func runPartTwo() error {
 		if l == "" {
 			continue
 		}
-		sID := getSeatID(l)
+		sID := parseBinary(l)
 		seatIDs = append(seatIDs, sID)
 	}
 
