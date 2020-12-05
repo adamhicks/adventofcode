@@ -72,7 +72,7 @@ func runPartTwo() error {
 		}
 	}
 
-	rowCount := (len(content) / 8) + 1
+	rowCount := (len(seatIDs) / 8) + 1
 	foundSeats := make([]bool, rowCount*8)
 	for _, id := range seatIDs {
 		foundSeats[id-minID] = true
