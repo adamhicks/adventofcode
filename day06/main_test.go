@@ -81,5 +81,4 @@ b
 `
 	res := parseInput(input)
 	assert.Equal(t, 6, sumGroupsIntersect(res))
-	t.Fail()
 }
