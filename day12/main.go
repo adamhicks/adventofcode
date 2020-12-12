@@ -144,7 +144,7 @@ func runPartTwo() error {
 		return err
 	}
 	pos := followInstructions2(ins, position{}, position{dNorth: 1, dEast: 10})
-	fmt.Println(abs(pos.dNorth) + abs(pos.dEast))
+	fmt.Println(pos.distance())
 	return nil
 }
 
