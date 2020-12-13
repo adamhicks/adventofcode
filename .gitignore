@@ -16,3 +16,6 @@
 
 # Mac stuff
 .DS_Store
+
+# GoLand
+.idea

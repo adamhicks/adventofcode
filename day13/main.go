@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -57,7 +58,69 @@ func runPartOne() error {
 	return nil
 }
 
+func eGCD(a, b int) (int, int, int) {
+	oldR, r := a, b
+	oldS, s := 1, 0
+	oldT, t := 0, 1
+
+	for r != 0 {
+		q := oldR / r
+		oldR, r = r, oldR-q*r
+		oldS, s = s, oldS-q*s
+		oldT, t = t, oldT-q*t
+	}
+	return oldS, oldT, oldR
+}
+
+type modAndRemainder struct {
+	Mod, Remain int
+}
+
+func getModAndRemainders(buses []int) []modAndRemainder {
+	var ret []modAndRemainder
+	for i, b := range buses {
+		if b == 0 {
+			continue
+		}
+		ret = append(ret, modAndRemainder{Mod: b, Remain: i})
+	}
+	// Sort by highest modulo
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i].Mod > ret[j].Mod
+	})
+	return ret
+}
+
+func chineseRemainder(mnrs []modAndRemainder) modAndRemainder {
+	cur := mnrs[0]
+	for _, mr := range mnrs[1:] {
+		rem := mr.Remain - cur.Remain
+		a, _, _ := eGCD(cur.Mod, mr.Mod)
+		rem *= a
+		if rem < 0 {
+			rem = mr.Mod - rem
+		}
+		rem %= mr.Mod
+		cur = modAndRemainder{
+			Mod:    cur.Mod * mr.Mod,
+			Remain: cur.Mod * rem + cur.Remain,
+		}
+	}
+	return cur
+}
+
 func runPartTwo() error {
+	content, err := ioutil.ReadFile("input.txt")
+	if err != nil {
+		return err
+	}
+	_, buses, err := parseInput(string(content))
+	if err != nil {
+		return err
+	}
+	mnrs := getModAndRemainders(buses)
+	mr := chineseRemainder(mnrs)
+	fmt.Println(mr.Mod - mr.Remain)
 	return nil
 }
 
