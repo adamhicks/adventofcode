@@ -30,9 +30,9 @@ func TestTick(t *testing.T) {
 
 func TestTick4d(t *testing.T) {
 	u := parseInput(testInput)
-	for i := 0; i < 2; i++ {
+	for i := 0; i < 6; i++ {
 		u = tickGameOfLife(u, getNeighbours4d)
 	}
 	fmt.Println(u)
-	assert.Len(t, u, 112)
+	assert.Len(t, u, 848)
 }
