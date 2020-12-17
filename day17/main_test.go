@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -33,6 +32,5 @@ func TestTick4d(t *testing.T) {
 	for i := 0; i < 6; i++ {
 		u = tickGameOfLife(u, getNeighbours4d)
 	}
-	fmt.Println(u)
 	assert.Len(t, u, 848)
 }

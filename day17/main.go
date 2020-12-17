@@ -50,7 +50,7 @@ func (u universe) String() string {
 			fmt.Fprintf(&b, "z = %d, w = %d\n", z, w)
 			for y := min.Y; y <= max.Y; y++ {
 				for x := min.X; x <= max.X; x++ {
-					if u[coord{X: x, Y: y, Z: z}] {
+					if u[coord{X: x, Y: y, Z: z, W: w}] {
 						fmt.Fprint(&b, "#")
 					} else {
 						fmt.Fprint(&b, ".")
