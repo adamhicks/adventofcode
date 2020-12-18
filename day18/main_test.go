@@ -37,16 +37,6 @@ func TestExample(t *testing.T) {
 	}
 }
 
-func TestManip(t *testing.T) {
-	s := "9 * 2 + 3 + 4"
-	e, err := parseExpression(s)
-	require.NoError(t, err)
-
-	e = manipulatePrecedence(e)
-	fmt.Println(e)
-	assert.Equal(t, 81, e.Value())
-}
-
 func TestManipulate(t *testing.T) {
 	testCases := []struct {
 		expression string

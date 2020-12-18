@@ -10,7 +10,23 @@ import (
 )
 
 type expr interface {
+	SetParent(expr)
+	ChangeChild(from, to expr)
+	Parent() expr
+	Format() string
 	Value() int
+}
+
+type basicExpr struct {
+	parent expr
+}
+
+func (b *basicExpr) SetParent(e expr) {
+	b.parent = e
+}
+
+func (b basicExpr) Parent() expr {
+	return b.parent
 }
 
 type operationType int
@@ -21,11 +37,32 @@ const (
 )
 
 type binaryOp struct {
+	basicExpr
 	op          operationType
 	left, right expr
 }
 
+func (o *binaryOp) ChangeChild(from, to expr) {
+	if o.left == from {
+		o.left = to
+	} else if o.right == from {
+		o.right = to
+	} else {
+		panic("invalid child")
+	}
+}
+
 func (o binaryOp) String() string {
+	switch o.op {
+	case opAddition:
+		return "bop +"
+	case opMultiply:
+		return "bop *"
+	}
+	panic("invalid op")
+}
+
+func (o binaryOp) Format() string {
 	var c string
 	switch o.op {
 	case opAddition:
@@ -35,7 +72,7 @@ func (o binaryOp) String() string {
 	default:
 		panic("bad operator")
 	}
-	return fmt.Sprintf("(%s %s %s)", o.left, c, o.right)
+	return fmt.Sprintf("%s %s %s", o.left.Format(), c, o.right.Format())
 }
 
 func (o *binaryOp) Value() int {
@@ -49,25 +86,50 @@ func (o *binaryOp) Value() int {
 }
 
 type parenthesis struct {
-	child expr
+	basicExpr
+	parent expr
+	child  expr
+}
+
+func (p *parenthesis) ChangeChild(from, to expr) {
+	if p.child == from {
+		p.child = to
+	} else {
+		panic("invalid child")
+	}
 }
 
 func (p parenthesis) String() string {
-	return fmt.Sprintf("(%s)", p.child)
+	return "par"
+}
+
+func (p parenthesis) Format() string {
+	return "(" + p.child.Format() + ")"
 }
 
 func (p *parenthesis) Value() int {
 	return p.child.Value()
 }
 
-type literal int
+type literal struct {
+	basicExpr
+	val int
+}
+
+func (l literal) ChangeChild(from, to expr) {
+	panic("no children")
+}
 
 func (l literal) String() string {
-	return strconv.Itoa(int(l))
+	return "literal " + l.Format()
+}
+
+func (l literal) Format() string {
+	return strconv.Itoa(l.val)
 }
 
 func (l *literal) Value() int {
-	return int(*l)
+	return l.val
 }
 
 func parseExpression(s string) (expr, error) {
@@ -79,22 +141,30 @@ func parseExpression(s string) (expr, error) {
 		case ' ':
 			continue
 		case '+':
-			cur = &binaryOp{left: cur, op: opAddition}
+			bop := &binaryOp{left: cur, op: opAddition}
+			cur.SetParent(bop)
+			cur = bop
 		case '*':
-			cur = &binaryOp{left: cur, op: opMultiply}
+			bop := &binaryOp{left: cur, op: opMultiply}
+			cur.SetParent(bop)
+			cur = bop
 		case '(':
 			stack = append([]expr{cur}, stack...)
 			cur = nil
 		case ')':
+			p := &parenthesis{child: cur}
+			cur.SetParent(p)
+			cur = p
+
 			top := stack[0]
 			stack = stack[1:]
-			cur = &parenthesis{child: cur}
 			if top != nil {
 				bop, ok := top.(*binaryOp)
 				if !ok {
 					return nil, errors.New("invalid stack element")
 				}
 				bop.right = cur
+				p.SetParent(bop)
 				cur = top
 			}
 		default:
@@ -102,15 +172,16 @@ func parseExpression(s string) (expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			l := literal(i)
+			l := &literal{val: i}
 			if cur == nil {
-				cur = &l
+				cur = l
 			} else {
 				bop, ok := cur.(*binaryOp)
 				if !ok {
 					return nil, fmt.Errorf("ended with invalid expression '%s'", string(c))
 				}
-				bop.right = &l
+				bop.right = l
+				l.SetParent(bop)
 			}
 		}
 	}
@@ -161,6 +232,9 @@ func maybeApplyPrecedence(e expr) (expr, bool) {
 	left, ok := plus.left.(*binaryOp)
 	if ok && left.op == opMultiply {
 		e = left
+		left.SetParent(plus.Parent())
+		plus.SetParent(left)
+
 		plus.left = left.right
 		left.right = plus
 		changed = true
@@ -170,6 +244,9 @@ func maybeApplyPrecedence(e expr) (expr, bool) {
 		if e == plus {
 			e = right
 		}
+		right.SetParent(plus.Parent())
+		plus.SetParent(right)
+
 		plus.right = right.left
 		right.left = plus
 		changed = true
@@ -178,43 +255,31 @@ func maybeApplyPrecedence(e expr) (expr, bool) {
 }
 
 func manipulatePrecedence(e expr) expr {
-	// repeating this loop until no more changes
-	// hack to deal with recursive tree shifts
-	// solution is probably to use parent pointers
-	for {
-		// use a root pointer that wont be swapped
-		root := &parenthesis{child: e}
-		toVisit := []expr{root}
+	// use a root pointer that wont be swapped
+	root := &parenthesis{child: e}
+	e.SetParent(root)
+	toVisit := []expr{e}
 
-		var anyChanged bool
+	for len(toVisit) > 0 {
+		e := toVisit[0]
+		toVisit = toVisit[1:]
 
-		for len(toVisit) > 0 {
-			e := toVisit[0]
-			toVisit = toVisit[1:]
-
+		p := e.Parent()
+		ne, changed := maybeApplyPrecedence(e)
+		if changed {
+			p.ChangeChild(e, ne)
+			toVisit = append(toVisit, p)
+		} else {
 			switch o := e.(type) {
 			case *parenthesis:
-				var a bool
-				o.child, a = maybeApplyPrecedence(o.child)
 				toVisit = append(toVisit, o.child)
-				if a {
-					anyChanged = true
-				}
 			case *binaryOp:
-				var a, b bool
-				o.left, a = maybeApplyPrecedence(o.left)
-				o.right, b = maybeApplyPrecedence(o.right)
 				toVisit = append(toVisit, o.left, o.right)
-				if a || b {
-					anyChanged = true
-				}
 			}
 		}
-		e = root.child
-		if !anyChanged {
-			break
-		}
 	}
+	e = root.child
+	e.SetParent(nil)
 	return e
 }
 
