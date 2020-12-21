@@ -35,10 +35,6 @@ func (i edgeID) Reverse() edgeID {
 	return rev
 }
 
-func (i edgeID) Symmetric() int {
-	return int(i) + int(i.Reverse())
-}
-
 func (i edgeID) String() string {
 	b := make([]byte, cellWidth)
 	for j := 0; j < cellWidth; j++ {
