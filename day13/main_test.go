@@ -47,16 +47,16 @@ func TestBrilliantCRT(t *testing.T) {
 }
 
 func TestExample2(t *testing.T) {
-	testCases := []struct{
+	testCases := []struct {
 		mnrs []modAndRemainder
-		exp modAndRemainder
+		exp  modAndRemainder
 	}{
 		{mnrs: []modAndRemainder{
 			{Mod: 17, Remain: 0},
 			{Mod: 13, Remain: 2},
 			{Mod: 19, Remain: 3},
 		},
-			exp: modAndRemainder{Mod: 4199, Remain: 782},
+			exp: modAndRemainder{Mod: 4199, Remain: 2975},
 		},
 		{mnrs: []modAndRemainder{
 			{Mod: 1789, Remain: 0},
@@ -64,7 +64,7 @@ func TestExample2(t *testing.T) {
 			{Mod: 47, Remain: 2},
 			{Mod: 1889, Remain: 3},
 		},
-			exp: modAndRemainder{Mod: 5876813119, Remain: -1202161486},
+			exp: modAndRemainder{Mod: 5876813119, Remain: 4356986059},
 		},
 	}
 

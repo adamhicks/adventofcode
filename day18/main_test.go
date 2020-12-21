@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 	"testing"
 
@@ -13,7 +12,7 @@ func TestString(t *testing.T) {
 	s := "1 + (2 * 3 + 4)"
 	n, err := parseExpression(s)
 	require.NoError(t, err)
-	assert.Equal(t, s, fmt.Sprint(n))
+	assert.Equal(t, s, n.Format())
 }
 
 func TestExample(t *testing.T) {
