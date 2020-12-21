@@ -84,6 +84,8 @@ func newImage(id int, data [][]pixelContent) *image {
 	}
 }
 
+// UniqueEdges returns the count of this cells edges which are
+// unique in the image
 func (i *image) UniqueEdges(eCount map[edgeID]int) int {
 	var s int
 	for _, ie := range i.EdgeIDs {
@@ -94,12 +96,16 @@ func (i *image) UniqueEdges(eCount map[edgeID]int) int {
 	return s
 }
 
+// Rotate moves each edge round the cell by 90 degrees clockwise
 func (i *image) Rotate() {
 	i.Rotation++
 	last := i.EdgeIDs[3]
 	i.EdgeIDs = append([]edgeID{last}, i.EdgeIDs[0:3]...)
 }
 
+// FlipVertically flips the cell
+//
+// Each edge is reversed and the top and bottom switch places
 func (i *image) FlipVertically() {
 	i.Flipped = !i.Flipped
 	i.EdgeIDs[edgeTop], i.EdgeIDs[edgeBottom] = i.EdgeIDs[edgeBottom], i.EdgeIDs[edgeTop]
@@ -108,6 +114,11 @@ func (i *image) FlipVertically() {
 	}
 }
 
+// RenderInner writes the pixel data from this image cell
+// into a grid with a given offset
+//
+// It applies any stored rotations and flips
+// It doesn't write the borders of the stored pixel data
 func (i *image) RenderInner(buffer [][]pixelContent, xOff, yOff int) {
 	var t []coordTransform
 	if i.Flipped {
@@ -134,10 +145,12 @@ const (
 
 type coordTransform func(x, y int, n int) (int, int)
 
+// rotate transforms the coordinates by 90 degrees clockwise
 func rotate(x, y int, n int) (int, int) {
 	return n - 1 - y, x
 }
 
+// flip transforms the coordinates by flipping vertically
 func flip(x, y int, n int) (int, int) {
 	return x, n - 1 - y
 }
@@ -222,6 +235,8 @@ func parseInput(content string) ([]*image, error) {
 	return ret, nil
 }
 
+// countEdgeIDs finds the number of matching edges for each edgeID
+// including reversed edges for efficiency later on
 func countEdgeIDs(imgs []*image) map[edgeID]int {
 	count := make(map[edgeID]int)
 	for _, i := range imgs {
@@ -268,16 +283,14 @@ type imageConstructor struct {
 	edgeCount       map[edgeID]int
 }
 
-func (c *imageConstructor) isEdgeUnique(e edgeID) bool {
-	return c.edgeCount[e] == 1
-}
-
+// popTopLeft returns the first corner cell, a cell with two unique/unmatched edges
 func (c *imageConstructor) popTopLeft() *image {
 	for idx, i := range c.remainingImages {
 		if i.UniqueEdges(c.edgeCount) == 2 {
 			c.remainingImages = append(c.remainingImages[:idx], c.remainingImages[idx+1:]...)
 			for j := 0; j < 4; j++ {
-				if c.edgeCount[i.EdgeIDs[edgeTop]] == 1 && c.edgeCount[i.EdgeIDs[edgeLeft]] == 1 {
+				top, left := i.EdgeIDs[edgeTop], i.EdgeIDs[edgeLeft]
+				if c.edgeCount[top] == 1 && c.edgeCount[left] == 1 {
 					return i
 				}
 				i.Rotate()
@@ -288,6 +301,8 @@ func (c *imageConstructor) popTopLeft() *image {
 	panic("no top left")
 }
 
+// popImageMatchingEdge finds a cell with a matching edge and flips and or rotates
+// it so that the edge matches in a given direction
 func (c *imageConstructor) popImageMatchingEdge(e edgeID, dir int) *image {
 	er := e.Reverse()
 	for idx, i := range c.remainingImages {
@@ -312,6 +327,13 @@ func (c *imageConstructor) popImageMatchingEdge(e edgeID, dir int) *image {
 	return nil
 }
 
+// solveImage finds an arrangement of cells such that all
+// borders match
+//
+// First it gets the top left corner and matches the right hand edge
+// to form the first row
+// Then for each subsequent row it matches the bottom edge from the row
+// above
 func solveImage(imgs []*image) [][]*image {
 	con := imageConstructor{
 		d:               int(math.Sqrt(float64(len(imgs)))),
@@ -344,6 +366,8 @@ func solveImage(imgs []*image) [][]*image {
 	return fullImage
 }
 
+// renderFullImage takes a grid of cells and renders them
+// (without cell borders) to a pixel buffer
 func renderFullImage(full [][]*image) [][]pixelContent {
 	d := len(full)
 	width := cellWidth - 2
@@ -382,6 +406,10 @@ func compileNessy() map[coord]bool {
 	return nessy
 }
 
+// searchForPattern searches the image for pixels set in the pattern defined in `p`
+//
+// returns the number of remaining black pixels after all the matching pixels have
+// been cleared
 func searchForPattern(p map[coord]bool, img [][]pixelContent) int {
 	n := len(img)
 	allBlacks := make([][]pixelContent, n)
@@ -428,15 +456,22 @@ func searchForPattern(p map[coord]bool, img [][]pixelContent) int {
 	return remBlacks
 }
 
+// searchAllOrientations checks all orientations of the image for the pattern
+//
+// returns the remaining black pixels for each orientation
 func searchAllOrientations(p map[coord]bool, orig [][]pixelContent) []int {
-	var res []int
+	res := []int{searchForPattern(p, orig)}
+
+	// Rotate 3 times
 	var t []coordTransform
-	for i := 0; i < 4; i++ {
+	for i := 0; i < 3; i++ {
+		t = append(t, rotate)
 		img := transformImage(orig, t...)
 		rb := searchForPattern(p, img)
 		res = append(res, rb)
-		t = append(t, rotate)
 	}
+
+	// Flip and then rotate 3 times
 	t = []coordTransform{flip}
 	for i := 0; i < 4; i++ {
 		img := transformImage(orig, t...)
