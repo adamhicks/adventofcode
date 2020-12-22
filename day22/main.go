@@ -71,24 +71,11 @@ func runPartOne() error {
 	return nil
 }
 
-func getGameHash(deckA, deckB []int) string {
-	var b strings.Builder
-	fmt.Fprint(&b, "p1-")
-	for _, v := range deckA {
-		fmt.Fprintf(&b, "%d-", v)
-	}
-	fmt.Fprint(&b, "p2-")
-	for _, v := range deckB {
-		fmt.Fprintf(&b, "%d-", v)
-	}
-	return b.String()
-}
-
 func playRecursiveGame(deckA, deckB []int) (int, []int) {
-	seen := make(map[string]bool)
+	seen := make(map[int]bool)
 
 	for len(deckA) > 0 && len(deckB) > 0 {
-		hash := getGameHash(deckA, deckB)
+		hash := (score(deckA) << 32) | score(deckB)
 		if seen[hash] {
 			return 1, nil
 		}
