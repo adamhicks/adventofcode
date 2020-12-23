@@ -10,7 +10,7 @@ import (
 func TestCreateList(t *testing.T) {
 	vals := []int{1, 4, 6, 2, 7, 9}
 	l := createList(vals)
-	assert.Equal(t, vals, l.ToArray())
+	assert.Equal(t, vals, l.listNAfter(9, 6))
 }
 
 const testInput = `389125467`
@@ -25,7 +25,7 @@ func TestMove(t *testing.T) {
 	}
 
 	exp := []int{8, 3, 7, 4, 1, 9, 2, 6, 5}
-	assert.Equal(t, exp, l.ToArray())
+	assert.Equal(t, exp, l.listNAfter(5, 9))
 }
 
 func TestGetOutput(t *testing.T) {
@@ -48,7 +48,7 @@ func TestFillList(t *testing.T) {
 	l.fillTo(10)
 	assert.Equal(t,
 		[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-		l.ToArray(),
+		l.listNAfter(10, 10),
 	)
 }
 

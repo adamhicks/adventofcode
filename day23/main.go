@@ -58,31 +58,20 @@ func createList(s []int) list {
 	}
 }
 
-func nextID(i, max int) int {
-	if i < 1 {
-		panic("invalid id")
-	}
-	if i == 1 {
-		return max
-	}
-	return i - 1
-}
-
 func (l *list) move() {
 	start := l.cur.next
-	end := l.cur
+	end := start.next.next
 
-	vals := make(map[int]bool)
-	for i := 0; i < 3; i++ {
-		end = end.next
-		vals[end.v] = true
+	t := l.cur.v
+	for {
+		t--
+		if t < 1 {
+			t = l.max
+		}
+		if t != start.v && t != start.next.v && t != end.v {
+			break
+		}
 	}
-
-	t := nextID(l.cur.v, l.max)
-	for vals[t] {
-		t = nextID(t, l.max)
-	}
-
 	target := l.index[t]
 
 	l.cur.next = end.next
@@ -103,17 +92,6 @@ func (l list) listNAfter(start int, n int) []int {
 	for i := 0; i < n; i++ {
 		ret = append(ret, e.v)
 		e = e.next
-	}
-	return ret
-}
-
-func (l list) ToArray() []int {
-	e := l.cur
-	ret := []int{e.v}
-	cur := e.next
-	for cur != e {
-		ret = append(ret, cur.v)
-		cur = cur.next
 	}
 	return ret
 }
@@ -156,11 +134,8 @@ func (l *list) fillTo(to int) {
 }
 
 func getPartTwoOutput(l list) int {
-	mult := 1
-	for _, v := range l.listNAfter(1, 2) {
-		mult *= v
-	}
-	return mult
+	e := l.listNAfter(1, 2)
+	return e[0] * e[1]
 }
 
 func runPartTwo() error {
