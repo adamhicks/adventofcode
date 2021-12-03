@@ -9,123 +9,138 @@ import (
 //go:embed input.txt
 var input string
 
-func parseInput() ([][]int) {
-	var ret [][]int
-	for _, row := range strings.Split(input, "\n") {
-		r := make([]int, len(row))
-		for i, c := range row {
+func defaultInput() []int {
+	return parseInput(input)
+}
+
+func parseInput(s string) []int {
+	var ret []int
+	for _, row := range strings.Split(s, "\n") {
+		var v int
+		for _, c := range row {
+			v <<= 1
 			if c == '1' {
-				r[i] = 1
+				v++
 			}
 		}
-		if len(row) == 0 {
+		if v == 0 {
 			continue
 		}
-		ret = append(ret, r)
+		ret = append(ret, v)
 	}
 	return ret
 }
 
-func accumulateOnes(bin [][]int) []int {
-	out := make([]int, len(bin[0]))
-	for _, row := range bin {
-		for i, v := range row {
-			if v == 1 {
-				out[i]++
-			}
-		}
-	}
-	return out
-}
-
-var testIn = [][]int{
-	{0,0,1,0,0},
-	{1,1,1,1,0},
-	{1,0,1,1,0},
-	{1,0,1,1,1},
-	{1,0,1,0,1},
-	{0,1,1,1,1},
-	{0,0,1,1,1},
-	{1,1,1,0,0},
-	{1,0,0,0,0},
-	{1,1,0,0,1},
-	{0,0,0,1,0},
-	{0,1,0,1,0},
+func testInput() []int {
+	t := `00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010`
+	return parseInput(t)
 }
 
 func test1() {
-	g, e := getPower(testIn)
-	fmt.Println(g, e)
+	gamma := getPower(testInput(), true)
+	epsilon := getPower(testInput(), false)
+	fmt.Println(gamma, epsilon)
 }
 
 func test2() {
-	ox := toDec(filterRows(testIn, true))
-	co2 := toDec(filterRows(testIn, false))
+	ox := filterNums(testInput(), true)
+	co2 := filterNums(testInput(), false)
 	fmt.Println(ox, co2)
 }
 
-func toDec(bin []int) int {
+func maxMask(nums []int) int {
+	for mask := 1; ; mask <<=1 {
+		var anyNonZero bool
+		for _, n := range nums {
+			if n & mask > 0 {
+				anyNonZero = true
+				break
+			}
+		}
+		if !anyNonZero {
+			return mask>>1
+		}
+	}
+}
+
+func majorityOnes(nums []int, mask int) bool {
+	var ones int
+	for _, v := range nums {
+		if v & mask > 0 {
+			ones++
+		}
+	}
+	l := len(nums)/2
+	if len(nums)%2 == 0 && ones == l {
+		return true
+	}
+	return ones > l
+}
+
+func getPower(nums []int, selMaj bool) int {
+	mask := maxMask(nums)
 	var ret int
-	for _, v := range bin {
-		ret <<= 1;
-		if v == 1 {
+	for ; mask > 0; mask >>= 1 {
+		ret <<= 1
+		majOnes := majorityOnes(nums, mask)
+		if majOnes == selMaj {
 			ret++
 		}
 	}
 	return ret
 }
 
-func getPower(bin [][]int) (int, int) {
-	ones := accumulateOnes(bin)
-	maj := len(bin) / 2
+func filterNums(nums []int, selMaj bool) int {
+	mask := maxMask(nums)
+	var ret int
 
-	gamma := make([]int, len(ones))
-	epsilon := make([]int, len(ones))
-	for i, v := range ones {
-		if v > maj {
-			gamma[i] = 1;
-		} else {
-			epsilon[i] = 1;
+	for ; mask > 0; mask >>= 1 {
+		if len(nums) == 1 {
+			ret |= nums[0] & mask
+			continue
 		}
-	}
-	return toDec(gamma), toDec(epsilon)
-}
 
-func filterRows(bin [][]int, selMaj bool) []int {
-	kept := bin
-	for idx := 0; len(kept) > 1; idx++ {
-		var ones int
-		for _, v := range kept {
-			if v[idx] == 1 {
-				ones++
-			}
-		}
-		l := len(kept)/2
-		majOnes := ones > l
-		if len(kept)%2 == 0 && ones == l {
-			majOnes = true
-		}
+		majOnes := majorityOnes(nums, mask)
 		selOnes := majOnes == selMaj
-		var nextKept [][]int
-		for _, v := range kept {
-			if v[idx] == 1 && selOnes || v[idx] == 0 && !selOnes {
-				nextKept = append(nextKept, v)
+
+		if selOnes {
+			ret |= mask
+		}
+
+		var nextNums []int
+		for _, v := range nums {
+			isOne := (v & mask) > 0
+			if isOne == selOnes {
+				nextNums = append(nextNums, v)
 			}
 		}
-		kept = nextKept
+		nums = nextNums
 	}
-	return kept[0]
+	return ret
 }
 
 func part1() {
-	g, e := getPower(parseInput())
+	in := defaultInput()
+	g := getPower(in, true)
+	e := getPower(in, false)
 	fmt.Println(g * e)
 }
 
 func part2() {
-	in := parseInput()
-	ox := toDec(filterRows(in, true))
-	co2 := toDec(filterRows(in, false))
+	in := defaultInput()
+	ox := filterNums(in, true)
+	co2 := filterNums(in, false)
 	fmt.Println(ox*co2)
 }
 
