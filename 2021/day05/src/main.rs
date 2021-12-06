@@ -56,10 +56,10 @@ fn line_coords(l: Line, diag: bool) -> Vec<Coord> {
         .collect()
 }
 
-fn map_lines(size: usize, lines: Vec<Line>, diag: bool) -> Array2D<i64> {
+fn map_lines(size: usize, lines: &Vec<Line>, diag: bool) -> Array2D<i64> {
     let mut grid = Array2D::filled_with(0, size, size);
     for l in lines {
-        for c in line_coords(l, diag) {
+        for c in line_coords(*l, diag) {
             grid.get_mut(c.1, c.0).map(|v| *v += 1 );
         }
     }
@@ -74,13 +74,13 @@ fn count_two_plus(grid: Array2D<i64>) -> usize {
 
 fn part1() {
     let i = default_input();
-    let sum = count_two_plus(map_lines(1000, i, false));
+    let sum = count_two_plus(map_lines(1000, &i, false));
     println!("{}", sum);
 }
 
 fn part2() {
     let i = default_input();
-    let sum = count_two_plus(map_lines(1000, i, true));
+    let sum = count_two_plus(map_lines(1000, &i, true));
     println!("{}", sum);
 }
 
@@ -89,9 +89,8 @@ fn main() {
     part2();
 }
 
-
 #[test]
-fn test_input() -> Vec<Line> {
+fn test() {
     let s = "0,9 -> 5,9
 8,0 -> 0,8
 9,4 -> 3,4
@@ -102,19 +101,8 @@ fn test_input() -> Vec<Line> {
 3,4 -> 1,4
 0,0 -> 8,8
 5,5 -> 8,2";
-    return parse_input(s)
-}
+    let i = parse_input(s);
 
-#[test]
-fn test1() {
-    let i = test_input();
-    let sum = count_two_plus(map_lines(10, i, false));
-    assert_eq!(sum, 5);
-}
-
-#[test]
-fn test2() {
-    let i = test_input();
-    let sum = count_two_plus(map_lines(10, i, true));
-    assert_eq!(sum, 12);
+    assert_eq!(count_two_plus(map_lines(10, &i, false)), 5);
+    assert_eq!(count_two_plus(map_lines(10, &i, true)), 12);
 }
