@@ -3,14 +3,15 @@ use array2d::Array2D;
 type Board = Array2D<i64>;
 
 fn parse_input(input: &str) -> (Vec<i64>, Vec<Board>) {
-    let (p1, p2) = input.split_once("\n\n").unwrap();
+    let mut i = input.split("\n\n");
 
-    let draws : Vec<i64> = p1.split(",")
+    let draws : Vec<i64> = i.next().unwrap()
+        .split(",")
         .map(str::parse)
         .map(Result::unwrap)
         .collect();
 
-    let boards : Vec<Board> = p2.split("\n\n")
+    let boards : Vec<Board> = i
         .map(|g| {
             let a : Vec<Vec<i64>> = g.lines()
                 .map(|line| {
