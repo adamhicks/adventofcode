@@ -82,7 +82,6 @@ fn complete(l : &str) -> Option<String> {
     Some(stk.into_iter()
         .rev()
         .filter_map(|c| open.get(&c))
-        // .map(|c| *c)
         .collect()
     )
 }
