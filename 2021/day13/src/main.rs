@@ -52,7 +52,7 @@ fn part1(input: &(HashSet<Coord>, Vec<(String, usize)>)) -> usize {
     fold_coords(&input.0, &input.1[0]).len()
 }
 
-fn part2(input: &(HashSet<Coord>, Vec<(String, usize)>)) -> usize {
+fn part2(input: &(HashSet<Coord>, Vec<(String, usize)>)) -> String {
     let mut c = input.0.clone();
     for f in &input.1 {
         c = fold_coords(&c, f);
@@ -60,18 +60,19 @@ fn part2(input: &(HashSet<Coord>, Vec<(String, usize)>)) -> usize {
     let max_x = c.iter().map(|c| c.0).max().unwrap();
     let max_y = c.iter().map(|c| c.1).max().unwrap();
 
+    let mut s = String::new();
+
     for y in 0..=max_y {
         for x in 0..=max_x {
             if c.contains(&(x, y)) {
-                print!("#");
+                s += "#";
             } else {
-                print!(".");
+                s += ".";
             }
         }
-        println!();
+        s += "\n";
     }
-
-    0
+    s
 }
 
 fn main() {
@@ -104,5 +105,10 @@ fn test() {
 fold along y=7
 fold along x=5");
     assert_eq!(part1(&i), 17);
-    assert_eq!(part2(&i), 0);
+    assert_eq!(part2(&i), "#####
+#...#
+#...#
+#...#
+#####
+");
 }
