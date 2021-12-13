@@ -2,30 +2,18 @@ use std::collections::HashMap;
 
 type CaveMap = HashMap<String, Vec<String>>;
 
-fn insert_link(m: &mut CaveMap, from: &String, to: &String) {
-    if m.contains_key(from) {
-        m.get_mut(from).unwrap().push(to.to_string());
-    } else {
-        m.insert(from.to_string(), vec![to.to_string()]);
-    }
-}
-
-fn to_map(input: Vec<(String, String)>) -> HashMap<String, Vec<String>> {
-    let mut m = HashMap::new();
-    for conn in input {
-        insert_link(&mut m, &conn.0, &conn.1);
-        insert_link(&mut m, &conn.1, &conn.0);
-    }
-    m
-}
-
 fn parse_input(input: &str) -> CaveMap {
-    to_map(input.trim().lines()
-        .map(|l| {
-            let (from, to) = l.split_once("-").unwrap();
-            (from.to_string(), to.to_string())
+    input.trim().lines()
+        .map(|l| l.split_once("-").unwrap())
+        .fold(CaveMap::new(), |mut cm, (from, to)| {
+            cm.entry(from.to_string())
+                .or_default()
+                .push(to.to_string());
+            cm.entry(to.to_string())
+                .or_default()
+                .push(from.to_string());
+            cm
         })
-        .collect())
 }
 
 fn default_input() -> CaveMap {
@@ -111,8 +99,7 @@ fn find_routes(m: &CaveMap, can_visit: CanVisitFn) -> Vec<Vec<String>> {
 }
 
 fn part1(input: &CaveMap) -> usize {
-    let routes = find_routes(input, visit_part1);
-    routes.len()
+    find_routes(input, visit_part1).len()
 }
 
 fn part2(input: &CaveMap) -> usize {
