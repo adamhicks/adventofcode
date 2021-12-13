@@ -22,11 +22,6 @@ fn default_input() -> CaveMap {
 
 type CanVisitFn = fn(&String, &HashMap<String, i32>) -> bool;
 
-struct RouteMap {
-    path: Vec<String>,
-    visited: HashMap<String, i32>,
-}
-
 fn is_upper(s: &String) -> bool {
     return s.chars().all(|c| c.is_ascii_uppercase())
 }
@@ -34,7 +29,8 @@ fn is_upper(s: &String) -> bool {
 fn visit_part1(n: &String, visited: &HashMap<String, i32>) -> bool {
     if is_upper(n) {
         return true;
-    } else if n == "start" {
+    }
+    if n == "start" {
         return false;
     }
     *visited.get(n).unwrap() == 0
@@ -43,7 +39,8 @@ fn visit_part1(n: &String, visited: &HashMap<String, i32>) -> bool {
 fn visit_part2(n: &String, visited: &HashMap<String, i32>) -> bool {
     if is_upper(n) {
         return true;
-    } else if n == "start" {
+    }
+    if n == "start" {
         return false;
     }
 
@@ -54,6 +51,11 @@ fn visit_part2(n: &String, visited: &HashMap<String, i32>) -> bool {
         return false;
     }
     true
+}
+
+struct RouteMap {
+    path: Vec<String>,
+    visited: HashMap<String, i32>,
 }
 
 fn extend_route(r: &RouteMap, n: &String) -> RouteMap {
@@ -82,16 +84,16 @@ fn find_routes(m: &CaveMap, can_visit: CanVisitFn) -> Vec<Vec<String>> {
 
     while stk.len() > 0 {
         let route = stk.pop().unwrap();
-        let last = &route.path[route.path.len()-1];
+        let last = route.path.last().unwrap();
 
         if last == "end" {
             ret.push(route.path);
             continue;
         }
 
-        for to in m.get(last).unwrap() {
-            if can_visit(to, &route.visited) {
-                stk.push(extend_route(&route, to));
+        for to in &m[last] {
+            if can_visit(&to, &route.visited) {
+                stk.push(extend_route(&route, &to));
             }
         }
     }
@@ -145,5 +147,3 @@ start-RW");
     assert_eq!(part1(&i2), 226);
     assert_eq!(part2(&i2), 3509);
 }
-
-
