@@ -1,8 +1,6 @@
 use array2d::Array2D;
-use itertools::Itertools;
-// use std::collections::HashMap;
+use std::cmp::Reverse;
 use std::collections::BinaryHeap;
-use std::cmp::Ordering;
 
 type Cave = Array2D<usize>;
 type Coord = (usize, usize);
@@ -41,54 +39,33 @@ fn neighbours(c: Coord, max: Coord) -> Vec<Coord> {
     r
 }
 
-#[derive(Clone, Eq, PartialEq)]
-struct State {
-    cost: usize,
-    position: Coord,
-}
-
-impl Ord for State {
-    fn cmp(&self, other: &Self) -> Ordering {
-        other.cost.cmp(&self.cost)
-            .then_with(|| self.position.cmp(&other.position))
-    }
-}
-
-impl PartialOrd for State {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-fn min_cost(input: &Cave) -> Option<usize> {
-    let end = (input.num_columns()-1, input.num_rows()-1);
+fn min_cost(cave: &Cave) -> Option<usize> {
+    let end = (cave.num_columns()-1, cave.num_rows()-1);
 
     let mut dist = Array2D::filled_with(
         usize::MAX, 
-        input.num_rows(), 
-        input.num_columns(),
+        cave.num_rows(), 
+        cave.num_columns(),
     );
     dist.set(0, 0, 0).unwrap();
 
     let mut heap = BinaryHeap::new();
-    heap.push(State{cost: 0, position: (0,0)});
+    heap.push((Reverse(0), (0,0)));
 
-    while let Some(s) = heap.pop() {
-        if s.position == end {
-            return Some(s.cost);
+    while let Some((Reverse(cost), pos)) = heap.pop() {
+        if pos == end {
+            return Some(cost);
         }
 
-        if s.cost > *dist.get(s.position.1, s.position.0).unwrap() {
+        if cost > *dist.get(pos.1, pos.0).unwrap() {
             continue;
         }
 
-        for n in neighbours(s.position, end){
-            let c = input.get(n.1, n.0).unwrap();
-            let next = State{cost: s.cost+c, position: n};
-
-            if next.cost < *dist.get(n.1, n.0).unwrap() {
-                dist.set(n.1, n.0, next.cost).unwrap();
-                heap.push(next);
+        for n in neighbours(pos, end){
+            let c = cost + cave.get(n.1, n.0).unwrap();
+            if c < *dist.get(n.1, n.0).unwrap() {
+                dist.set(n.1, n.0, c).unwrap();
+                heap.push((Reverse(c), n));
             }
         }
     }
