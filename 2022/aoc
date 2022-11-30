@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+pipenv run python -m $1
