@@ -1,3 +1,27 @@
 #!/bin/zsh
 
-pipenv run python -m $1
+CMD=$1
+DAY=$2
+
+if [ -z "$DAY" ]; then
+    DAY=$(ls | grep day | sort -r | head -n 1)
+fi
+
+if [ ! -d "$DAY" ]; then
+    echo "unable to find directory '$DAY'"
+    exit 1
+fi
+
+case $CMD in
+test)
+    echo "running tests for $DAY"
+    pipenv run python $DAY/solution.py
+    ;;
+run)
+    echo "running $DAY"
+    pipenv run python -m $DAY
+    ;;
+*)
+    echo "Usage: $0 [test|run] [optional: dir to use]"
+    exit 1
+esac
