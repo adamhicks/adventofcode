@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+pipenv run python $1/solution.py
