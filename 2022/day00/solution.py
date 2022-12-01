@@ -11,22 +11,21 @@ def part2(i: List[str]) -> int:
 def default_input() -> str:
     fn = path.join(path.dirname(__file__), "input.txt")
     with open(fn) as i:
-        return i.read()
+        return parse(i.read())
 
 def parse(i: str) -> List[str]:
     return i.splitlines()
 
 def run():
-    i = parse(default_input())
+    i = default_input()
     print(part1(i))
     print(part2(i))
 
 def test():
-    s = """This
+    i = parse("""This
     is
     a
-    test"""
-    i = parse(s)
+    test""")
     print(part1(i))
     print(part2(i))
 

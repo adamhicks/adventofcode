@@ -11,19 +11,19 @@ def part2(i: List[List[int]]) -> int:
 def default_input() -> str:
     fn = path.join(path.dirname(__file__), "input.txt")
     with open(fn) as i:
-        return i.read()
+        return parse(i.read())
 
 def parse(i: str) -> List[List[int]]:
     return [[int(k) for k in l.splitlines()] for l in i.split("\n\n")]
 
 def run():
-    i = parse(default_input())
+    i = default_input()
     print(part1(i))
     print(part2(i))
 
 
 def test():
-    s = """1000
+    i = parse("""1000
 2000
 3000
 
@@ -36,8 +36,7 @@ def test():
 8000
 9000
 
-10000"""
-    i = parse(s)
+10000""")
     print(part1(i))
     print(part2(i))
 
