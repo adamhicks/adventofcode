@@ -8,21 +8,25 @@ def score(c):
     else:
         return (ord(c) - ord('a')) + 1
 
-def part1(i: List[str]) -> int:
-    sum = 0
-    for l in i:
-        half = int(len(l)/2)
-        first, second = l[:half], l[half:]
-        c = set(first) & set(second)
-        sum += score(c.pop())
-    return sum
+def halve(l):
+    half = len(l)//2
+    yield l[:half]
+    yield l[half:]
 
-def split(l, size):
+def part1(i: List[str]) -> int:
+    bags = [[frozenset(s) for s in halve(l)] for l in i]
+    common = [
+        next(iter(reduce(lambda a, b: a & b, bag)))
+        for bag in bags
+    ]
+    return sum(score(c) for c in common)
+
+def chunk(l, size):
   for i in range(0, len(l), size):
     yield l[i:i + size]
 
 def part2(i: List[str]) -> int:
-    groups = [[frozenset(i) for i in c] for c in split(i, 3)]
+    groups = [[frozenset(i) for i in c] for c in chunk(i, 3)]
     common = [reduce(lambda a, b: a & b, g) for g in groups]
     return sum(score(next(iter(a))) for a in common)
 
