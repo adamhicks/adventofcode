@@ -1,4 +1,3 @@
-from collections import namedtuple
 from typing import List, NamedTuple
 from os import path
 
@@ -10,10 +9,15 @@ class Node(NamedTuple):
     size: int
     parent: NamedTuple
 
-def build_tree(i: List[str]) -> dict:
+def id_gen():
     id = 0
-    root = Node(id, "", True, {}, 0, None)
-    id += 1
+    while True:
+        yield id
+        id += 1
+
+def build_tree(i: List[str]) -> dict:
+    id = id_gen()
+    root = Node(next(id), "", True, {}, 0, None)
     current = root
     for l in i:
         if l.startswith("$ cd"):
@@ -24,13 +28,11 @@ def build_tree(i: List[str]) -> dict:
                 current = root
             else:
                 current = current.children[d]
-            continue
         elif l == "$ ls":
-            continue
+            pass
         else:
             s, item = l.split()
-            this_id = id
-            id += 1
+            this_id = next(id)
             if s == "dir":
                 current.children[item] = Node(this_id, item, True, {}, 0, current)
             else:
@@ -66,9 +68,8 @@ def part1(i: List[str]) -> int:
 def part2(i: List[str]) -> int:
     r = build_tree(i)
     sums = {}
-    calc_sizes(r, sums)
-
-    need = 30000000 - (70000000 - sums[r.id])
+    used = calc_sizes(r, sums)
+    need = 30000000 - (70000000 - used)
     return min(v for _, v in sums.items() if v > need)
 
 def default_input() -> str:
