@@ -1,5 +1,6 @@
+from functools import reduce
 from itertools import product
-from typing import List, Set
+from typing import List
 from os import path
 
 def clear(line: List[int]) -> bool:
@@ -20,21 +21,21 @@ def sight(line: List[int]) -> int:
     )
 
 def score(x: int, y: int, forest: List[List[int]], forest_cols: List[List[int]]) -> int:
-    left = sight(forest[y][x::-1])
-    right = sight(forest[y][x:])
-    up = sight(forest_cols[x][y::-1])
-    down = sight(forest_cols[x][y:])
-
-    return left * right * up * down
+    return reduce(lambda a, b: a*b, (sight(d) for d in [
+        forest[y][x::-1],
+        forest[y][x:],
+        forest_cols[x][y::-1],
+        forest_cols[x][y:],
+    ]))
 
 
 def part1(i: List[List[int]]) -> int:
     cols = list(zip(*i))
-    return len(set(
+    return len([
         (x, y)
         for x, y in product(range(len(cols)), range(len(i)))
         if visible(x, y, i, cols)
-    ))
+    ])
 
 def part2(i: List[List[int]]) -> int:
     cols = list(zip(*i))
