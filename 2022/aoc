@@ -6,26 +6,29 @@ SESSION=$(cat .session)
 if [ -z "$DAY" ]; then
     if [ $(date +%m%y) = "1222" ]; then
         DAY="day$(date +%d)"
-        if [ ! -d "$DAY" ]; then
-            cp -R day00 "$DAY"
-            DAY_URL="https://adventofcode.com/2022/day/$(date +%e | xargs)"
-            echo "created ./$DAY"
-            if [ ! -z "$SESSION" ]; then
-                INPUT="$DAY/input.txt"
-                curl -fsSL --cookie session=$SESSION "$DAY_URL/input" > "$INPUT" && echo "input downloaded successfully"
-            fi
-            git add "$DAY"
-            echo "happy solving $DAY_URL"
-            exit 0
-        fi
     else
         DAY=$(ls | grep day | sort -r | head -n 1)
     fi
-else
-    if [ ! -d "$DAY" ]; then
-        echo "unable to find directory '$DAY'"
+fi
+
+if [ ! -d "$DAY" ]; then
+    DAY_NUM=$(echo $DAY | sed -nr 's/^day([0-9]{2})$/\1/p')
+    if [ -z "$DAY_NUM" ]; then
+        echo "invalid day: '$DAY' should look like 'dayxx' where xx is the day"
         exit 1
     fi
+
+    cp -R day00 "$DAY"
+
+    DAY_URL="https://adventofcode.com/2022/day/$DAY_NUM"
+    echo "created ./$DAY"
+    if [ ! -z "$SESSION" ]; then
+        INPUT="$DAY/input.txt"
+        curl -fsSL --cookie session=$SESSION "$DAY_URL/input" > "$INPUT" && echo "input downloaded successfully"
+    fi
+    git add "$DAY"
+    echo "happy solving $DAY_URL"
+    exit 0
 fi
 
 echo "running $DAY"

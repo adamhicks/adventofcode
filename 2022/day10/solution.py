@@ -1,4 +1,3 @@
-from itertools import cycle
 from typing import List
 from os import path
 
@@ -24,7 +23,7 @@ def part2(i: List[str]) -> str:
     p = run_program(i)
     return '\n'.join(
         ''.join(
-            "#" if abs(v - i) <= 1 else "."
+            "█" if abs(v - i) <= 1 else " "
             for i, v in zip(range(40), p)
         ) for _ in range(6)
     )
@@ -43,11 +42,6 @@ def run():
     print(part2(i))
 
 def test():
-    tiny = parse("""noop
-addx 3
-addx -5""")
-    print(list(enumerate(run_program(tiny))))
-
     i = parse("""addx 15
 addx -11
 addx 6
