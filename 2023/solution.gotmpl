@@ -1,0 +1,42 @@
+package {{.PackageName}}
+
+import (
+	_ "embed"
+	"strings"
+)
+
+//go:embed input.txt
+var inputString string
+
+type input []string
+
+func parseInput(s string) input {
+	return strings.Split(strings.TrimSpace(s), "\n")
+}
+
+var testString1 = `...`
+
+func runPartOne(s input) {
+}
+
+var testString2 = `...`
+
+func runPartTwo(s input) {
+}
+
+type Solution struct{}
+
+func (Solution) TestPart1() {
+	runPartOne(parseInput(testString1))
+}
+
+func (Solution) RunPart1() {
+	runPartOne(parseInput(inputString))
+}
+
+func (Solution) TestPart2() {
+	runPartTwo(parseInput(testString2))
+}
+func (Solution) RunPart2() {
+	runPartTwo(parseInput(inputString))
+}
