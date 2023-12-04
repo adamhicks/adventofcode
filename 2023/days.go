@@ -3,8 +3,12 @@ package main
 
 import (
 	"github.com/adamhicks/adventofcode/2023/day01"
+	"github.com/adamhicks/adventofcode/2023/day02"
+	"github.com/adamhicks/adventofcode/2023/day04"
 )
 
 var daySolutions = map[int]DaySolution{
 	1: day01.Solution{},
+	2: day02.Solution{},
+	4: day04.Solution{},
 }

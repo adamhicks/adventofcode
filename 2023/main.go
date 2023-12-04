@@ -138,7 +138,7 @@ func getToken() (string, error) {
 	return t, nil
 }
 
-func startDay(ctx context.Context, token string, d, y int) error {
+func startDay(ctx context.Context, token string, y, d int) error {
 	log.Println("setting up day", d)
 	dir := getDayDir(d)
 	if err := makeDir(dir); err != nil {
