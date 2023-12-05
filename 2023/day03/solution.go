@@ -3,7 +3,6 @@ package day03
 import (
 	_ "embed"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"unicode"
@@ -46,7 +45,7 @@ func neighbours(c coord) []coord {
 	}
 }
 
-func runPartOne(s input) {
+func runPartOne(s input) error {
 	symbols := make(map[coord]rune)
 	for y, l := range s {
 		for x, c := range l {
@@ -74,7 +73,7 @@ func runPartOne(s input) {
 				s := line[idx:x]
 				num, err := strconv.Atoi(s)
 				if err != nil {
-					log.Fatal(err)
+					return err
 				}
 				if isPart {
 					sum += num
@@ -85,6 +84,7 @@ func runPartOne(s input) {
 		}
 	}
 	fmt.Println(sum)
+	return nil
 }
 
 var testString2 = `
@@ -100,7 +100,7 @@ var testString2 = `
 .664.598..
 `
 
-func runPartTwo(s input) {
+func runPartTwo(s input) error {
 	symbols := make(map[coord]rune)
 	for y, l := range s {
 		for x, c := range l {
@@ -132,7 +132,7 @@ func runPartTwo(s input) {
 				s := line[idx:x]
 				num, err := strconv.Atoi(s)
 				if err != nil {
-					log.Fatal(err)
+					return err
 				}
 				for c := range touchGears {
 					gears[c] = append(gears[c], num)
@@ -151,21 +151,23 @@ func runPartTwo(s input) {
 		sum += nums[0] * nums[1]
 	}
 	fmt.Println(sum)
+	return nil
 }
 
 type Solution struct{}
 
-func (Solution) TestPart1() {
-	runPartOne(parseInput(testString1))
+func (Solution) TestPart1() error {
+	return runPartOne(parseInput(testString1))
 }
 
-func (Solution) RunPart1() {
-	runPartOne(parseInput(inputString))
+func (Solution) RunPart1() error {
+	return runPartOne(parseInput(inputString))
 }
 
-func (Solution) TestPart2() {
-	runPartTwo(parseInput(testString2))
+func (Solution) TestPart2() error {
+	return runPartTwo(parseInput(testString2))
 }
-func (Solution) RunPart2() {
-	runPartTwo(parseInput(inputString))
+
+func (Solution) RunPart2() error {
+	return runPartTwo(parseInput(inputString))
 }

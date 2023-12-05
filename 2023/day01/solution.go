@@ -38,12 +38,13 @@ func getLineValue(l string) int {
 	return nums[0]*10 + nums[len(nums)-1]
 }
 
-func runPartOne(s input) {
+func runPartOne(s input) error {
 	var sum int
 	for _, l := range s {
 		sum += getLineValue(l)
 	}
 	fmt.Println(sum)
+	return nil
 }
 
 var testString2 = `two1nine
@@ -112,27 +113,29 @@ func getLineValueWithWords(l string) int {
 	return first*10 + last
 }
 
-func runPartTwo(s input) {
+func runPartTwo(s input) error {
 	var sum int
 	for _, line := range s {
 		sum += getLineValueWithWords(line)
 	}
 	fmt.Println(sum)
+	return nil
 }
 
 type Solution struct{}
 
-func (Solution) TestPart1() {
-	runPartOne(parseInput(testString1))
+func (Solution) TestPart1() error {
+	return runPartOne(parseInput(testString1))
 }
 
-func (Solution) RunPart1() {
-	runPartOne(parseInput(inputString))
+func (Solution) RunPart1() error {
+	return runPartOne(parseInput(inputString))
 }
 
-func (Solution) TestPart2() {
-	runPartTwo(parseInput(testString2))
+func (Solution) TestPart2() error {
+	return runPartTwo(parseInput(testString2))
 }
-func (Solution) RunPart2() {
-	runPartTwo(parseInput(inputString))
+
+func (Solution) RunPart2() error {
+	return runPartTwo(parseInput(inputString))
 }

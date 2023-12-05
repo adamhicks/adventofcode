@@ -3,7 +3,6 @@ package day04
 import (
 	_ "embed"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -69,12 +68,12 @@ func numWinners(winners, got []int) int {
 	return sum
 }
 
-func runPartOne(s input) {
+func runPartOne(s input) error {
 	var sum int
 	for _, l := range s {
 		_, win, got, err := parseCard(l)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		wins := numWinners(win, got)
 		var val int
@@ -84,6 +83,7 @@ func runPartOne(s input) {
 		sum += val
 	}
 	fmt.Println(sum)
+	return nil
 }
 
 var testString2 = `Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
@@ -94,14 +94,14 @@ Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
 Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
 `
 
-func runPartTwo(s input) {
+func runPartTwo(s input) error {
 	cards := make([]int, len(s))
 	for i, l := range s {
 		// add the initial card
 		cards[i]++
 		_, win, got, err := parseCard(l)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		wins := numWinners(win, got)
 		for j := 0; j < wins; j++ {
@@ -113,21 +113,23 @@ func runPartTwo(s input) {
 		sum += c
 	}
 	fmt.Println(sum)
+	return nil
 }
 
 type Solution struct{}
 
-func (Solution) TestPart1() {
-	runPartOne(parseInput(testString1))
+func (Solution) TestPart1() error {
+	return runPartOne(parseInput(testString1))
 }
 
-func (Solution) RunPart1() {
-	runPartOne(parseInput(inputString))
+func (Solution) RunPart1() error {
+	return runPartOne(parseInput(inputString))
 }
 
-func (Solution) TestPart2() {
-	runPartTwo(parseInput(testString2))
+func (Solution) TestPart2() error {
+	return runPartTwo(parseInput(testString2))
 }
-func (Solution) RunPart2() {
-	runPartTwo(parseInput(inputString))
+
+func (Solution) RunPart2() error {
+	return runPartTwo(parseInput(inputString))
 }

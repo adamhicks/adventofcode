@@ -3,7 +3,6 @@ package day02
 import (
 	_ "embed"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -56,7 +55,7 @@ func isPossible(seen, max colors) bool {
 	return seen.Red <= max.Red && seen.Blue <= max.Blue && seen.Green <= max.Green
 }
 
-func runPartOne(s input) {
+func runPartOne(s input) error {
 	maxSeen := colors{Red: 12, Green: 13, Blue: 14}
 	var sum int
 	for _, l := range s {
@@ -64,11 +63,11 @@ func runPartOne(s input) {
 		_, gVal, _ := strings.Cut(id, " ")
 		gameID, err := strconv.Atoi(gVal)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		gameSeen, err := parseGame(game)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		possible := true
 		for _, seen := range gameSeen {
@@ -81,6 +80,7 @@ func runPartOne(s input) {
 		}
 	}
 	fmt.Println(sum)
+	return nil
 }
 
 var testString2 = `Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
@@ -99,33 +99,35 @@ func minPossible(seen []colors) colors {
 	return ret
 }
 
-func runPartTwo(s input) {
+func runPartTwo(s input) error {
 	var sum int
 	for _, l := range s {
 		_, game, _ := strings.Cut(l, ": ")
 		gameSeen, err := parseGame(game)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		minPoss := minPossible(gameSeen)
 		sum += minPoss.Red * minPoss.Green * minPoss.Blue
 	}
 	fmt.Println(sum)
+	return nil
 }
 
 type Solution struct{}
 
-func (Solution) TestPart1() {
-	runPartOne(parseInput(testString1))
+func (Solution) TestPart1() error {
+	return runPartOne(parseInput(testString1))
 }
 
-func (Solution) RunPart1() {
-	runPartOne(parseInput(inputString))
+func (Solution) RunPart1() error {
+	return runPartOne(parseInput(inputString))
 }
 
-func (Solution) TestPart2() {
-	runPartTwo(parseInput(testString2))
+func (Solution) TestPart2() error {
+	return runPartTwo(parseInput(testString2))
 }
-func (Solution) RunPart2() {
-	runPartTwo(parseInput(inputString))
+
+func (Solution) RunPart2() error {
+	return runPartTwo(parseInput(inputString))
 }

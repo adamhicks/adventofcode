@@ -102,10 +102,10 @@ func start(ctx *cli.Context) error {
 }
 
 type DaySolution interface {
-	TestPart1()
-	RunPart1()
-	TestPart2()
-	RunPart2()
+	TestPart1() error
+	RunPart1() error
+	TestPart2() error
+	RunPart2() error
 }
 
 func run(ctx *cli.Context) error {
@@ -121,13 +121,21 @@ func run(ctx *cli.Context) error {
 
 func runSolution(s DaySolution) {
 	log.Println("running part 1 - sample")
-	s.TestPart1()
+	if err := s.TestPart1(); err != nil {
+		log.Fatal(err)
+	}
 	log.Println("running part 1")
-	s.RunPart1()
+	if err := s.RunPart1(); err != nil {
+		log.Fatal(err)
+	}
 	log.Println("running part 2 - sample")
-	s.TestPart2()
+	if err := s.TestPart2(); err != nil {
+		log.Fatal(err)
+	}
 	log.Println("running part 2")
-	s.RunPart2()
+	if err := s.RunPart2(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getToken() (string, error) {

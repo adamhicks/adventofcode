@@ -3,7 +3,6 @@ package day05
 import (
 	_ "embed"
 	"fmt"
-	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -100,16 +99,16 @@ func runMap(start []int, sec []string) ([]int, error) {
 	return ret, nil
 }
 
-func runPartOne(s input) {
+func runPartOne(s input) error {
 	seeds, err := numbers(strings.TrimPrefix(s[0][0], "seeds: "))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	current := seeds
 	for _, sec := range s[1:] {
 		current, err = runMap(current, sec[1:])
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
 	m := math.MaxInt
@@ -117,6 +116,7 @@ func runPartOne(s input) {
 		m = min(m, v)
 	}
 	fmt.Println(m)
+	return nil
 }
 
 var testString2 = testString1
@@ -178,10 +178,10 @@ func runMapTwo(start []IntRange, sec []string) ([]IntRange, error) {
 	return append(ret, current...), nil
 }
 
-func runPartTwo(s input) {
+func runPartTwo(s input) error {
 	seeds, err := numbers(strings.TrimPrefix(s[0][0], "seeds: "))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	var current []IntRange
 	for i := 0; i < len(seeds); i += 2 {
@@ -190,7 +190,7 @@ func runPartTwo(s input) {
 	for _, sec := range s[1:] {
 		current, err = runMapTwo(current, sec[1:])
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
 	m := math.MaxInt
@@ -198,21 +198,23 @@ func runPartTwo(s input) {
 		m = min(m, v.Start)
 	}
 	fmt.Println(m)
+	return nil
 }
 
 type Solution struct{}
 
-func (Solution) TestPart1() {
-	runPartOne(parseInput(testString1))
+func (Solution) TestPart1() error {
+	return runPartOne(parseInput(testString1))
 }
 
-func (Solution) RunPart1() {
-	runPartOne(parseInput(inputString))
+func (Solution) RunPart1() error {
+	return runPartOne(parseInput(inputString))
 }
 
-func (Solution) TestPart2() {
-	runPartTwo(parseInput(testString2))
+func (Solution) TestPart2() error {
+	return runPartTwo(parseInput(testString2))
 }
-func (Solution) RunPart2() {
-	runPartTwo(parseInput(inputString))
+
+func (Solution) RunPart2() error {
+	return runPartTwo(parseInput(inputString))
 }
