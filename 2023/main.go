@@ -93,7 +93,7 @@ func start(ctx *cli.Context) error {
 		return err
 	}
 	for _, day := range days {
-		err := startDay(ctx.Context, token, 2023, day)
+		err := startDay(ctx.Context, token, 2022, day)
 		if err != nil {
 			return err
 		}
@@ -114,7 +114,11 @@ func run(ctx *cli.Context) error {
 		return err
 	}
 	for _, day := range days {
-		runSolution(daySolutions[day])
+		s, ok := daySolutions[day]
+		if !ok {
+			return fmt.Errorf("solution for day %d not present", day)
+		}
+		runSolution(s)
 	}
 	return nil
 }

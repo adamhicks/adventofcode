@@ -17,27 +17,29 @@ func parseInput(s string) input {
 var testString1 = `...`
 
 func runPartOne(s input) error {
+    return nil
 }
 
 var testString2 = testString1
 
 func runPartTwo(s input) error {
+    return nil
 }
 
 type Solution struct{}
 
-func (Solution) TestPart1() {
+func (Solution) TestPart1() error {
 	return runPartOne(parseInput(testString1))
 }
 
-func (Solution) RunPart1() {
+func (Solution) RunPart1() error {
 	return runPartOne(parseInput(inputString))
 }
 
-func (Solution) TestPart2() {
+func (Solution) TestPart2() error {
 	return runPartTwo(parseInput(testString2))
 }
 
-func (Solution) RunPart2() {
+func (Solution) RunPart2() error {
 	return runPartTwo(parseInput(inputString))
 }
