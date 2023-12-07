@@ -146,10 +146,6 @@ func splitRange(r, sub IntRange) (IntRange, []IntRange) {
 	if r.End() > overlap.End() {
 		left = append(left, IntRange{Start: overlap.End(), Size: r.End() - overlap.End()})
 	}
-	tot := overlap.Size
-	for _, l := range left {
-		tot += l.Size
-	}
 	return overlap, left
 }
 
