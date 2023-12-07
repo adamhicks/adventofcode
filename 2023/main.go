@@ -93,7 +93,7 @@ func start(ctx *cli.Context) error {
 		return err
 	}
 	for _, day := range days {
-		err := startDay(ctx.Context, token, 2022, day)
+		err := startDay(ctx.Context, token, 2023, day)
 		if err != nil {
 			return err
 		}
