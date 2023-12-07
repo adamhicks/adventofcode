@@ -118,28 +118,35 @@ func run(ctx *cli.Context) error {
 		if !ok {
 			return fmt.Errorf("solution for day %d not present", day)
 		}
-		runSolution(s)
+		runSolution(day, s)
 	}
 	return nil
 }
 
-func runSolution(s DaySolution) {
-	log.Println("running part 1 - sample")
-	if err := s.TestPart1(); err != nil {
+func fmtPartName(day, part int, sample bool) string {
+	n := fmt.Sprintf("day %d part %d", day, part)
+	if sample {
+		n += " - sample"
+	}
+	return n
+}
+
+func runSolution(day int, s DaySolution) {
+	runPart(fmtPartName(day, 1, true), s.TestPart1)
+	runPart(fmtPartName(day, 1, false), s.RunPart1)
+	runPart(fmtPartName(day, 2, true), s.TestPart2)
+	runPart(fmtPartName(day, 2, false), s.RunPart2)
+}
+
+func runPart(name string, f func() error) {
+	start := time.Now()
+	log.Println(name)
+	err := f()
+	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("running part 1")
-	if err := s.RunPart1(); err != nil {
-		log.Fatal(err)
-	}
-	log.Println("running part 2 - sample")
-	if err := s.TestPart2(); err != nil {
-		log.Fatal(err)
-	}
-	log.Println("running part 2")
-	if err := s.RunPart2(); err != nil {
-		log.Fatal(err)
-	}
+	log.Println(time.Since(start))
+	log.Println("----")
 }
 
 func getToken() (string, error) {
