@@ -3,6 +3,7 @@ package day03
 import (
 	_ "embed"
 	"fmt"
+	"github.com/adamhicks/adventofcode/2023/aoc"
 	"strconv"
 	"strings"
 	"unicode"
@@ -28,29 +29,12 @@ var testString1 = `467..114..
 ...$.*....
 .664.598..`
 
-type coord struct {
-	X, Y int
-}
-
-func neighbours(c coord) []coord {
-	return []coord{
-		{X: c.X - 1, Y: c.Y - 1},
-		{X: c.X, Y: c.Y - 1},
-		{X: c.X + 1, Y: c.Y - 1},
-		{X: c.X - 1, Y: c.Y},
-		{X: c.X + 1, Y: c.Y},
-		{X: c.X - 1, Y: c.Y + 1},
-		{X: c.X, Y: c.Y + 1},
-		{X: c.X + 1, Y: c.Y + 1},
-	}
-}
-
 func runPartOne(s input) error {
-	symbols := make(map[coord]rune)
+	symbols := make(map[aoc.Vec2]rune)
 	for y, l := range s {
 		for x, c := range l {
 			if !unicode.IsDigit(c) && c != '.' {
-				symbols[coord{X: x, Y: y}] = c
+				symbols[aoc.Vec2{X: x, Y: y}] = c
 			}
 		}
 	}
@@ -64,7 +48,8 @@ func runPartOne(s input) error {
 				if idx == -1 {
 					idx = x
 				}
-				for _, c := range neighbours(coord{X: x, Y: y}) {
+				p := aoc.Vec2{X: x, Y: y}
+				for _, c := range p.Neighbours() {
 					if _, ok := symbols[c]; ok {
 						isPart = true
 					}
@@ -101,29 +86,30 @@ var testString2 = `
 `
 
 func runPartTwo(s input) error {
-	symbols := make(map[coord]rune)
+	symbols := make(map[aoc.Vec2]rune)
 	for y, l := range s {
 		for x, c := range l {
 			if !unicode.IsDigit(c) && c != '.' {
-				symbols[coord{X: x, Y: y}] = c
+				symbols[aoc.Vec2{X: x, Y: y}] = c
 			}
 		}
 	}
 
-	gears := make(map[coord][]int)
+	gears := make(map[aoc.Vec2][]int)
 
 	for y, line := range s {
 		line = line + "."
 		idx := -1
 
-		touchGears := make(map[coord]struct{})
+		touchGears := make(map[aoc.Vec2]struct{})
 
 		for x, chr := range line {
 			if unicode.IsDigit(chr) {
 				if idx == -1 {
 					idx = x
 				}
-				for _, c := range neighbours(coord{X: x, Y: y}) {
+				p := aoc.Vec2{X: x, Y: y}
+				for _, c := range p.Neighbours() {
 					if symbols[c] == '*' {
 						touchGears[c] = struct{}{}
 					}
@@ -138,7 +124,7 @@ func runPartTwo(s input) error {
 					gears[c] = append(gears[c], num)
 				}
 				idx = -1
-				touchGears = make(map[coord]struct{})
+				touchGears = make(map[aoc.Vec2]struct{})
 			}
 		}
 	}

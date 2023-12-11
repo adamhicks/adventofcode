@@ -3,6 +3,7 @@ package day11
 import (
 	_ "embed"
 	"fmt"
+	"github.com/adamhicks/adventofcode/2023/aoc"
 	"strings"
 )
 
@@ -26,22 +27,6 @@ var testString1 = `...#......
 .......#..
 #...#.....`
 
-type coord struct {
-	X, Y int
-}
-
-func abs(a int) int {
-	if a > 0 {
-		return a
-	} else {
-		return -a
-	}
-}
-
-func distance(a, b coord) int {
-	return abs(b.Y-a.Y) + abs(b.X-a.X)
-}
-
 func blanksCrossed(a, b int, counts []int) int {
 	var zeroes int
 
@@ -57,11 +42,11 @@ func blanksCrossed(a, b int, counts []int) int {
 	return zeroes
 }
 
-func parseMap(s input) ([]coord, []int, []int) {
+func parseMap(s input) ([]aoc.Vec2, []int, []int) {
 	rowCount := make([]int, len(s))
 	colCount := make([]int, len(s[0]))
 
-	var gals []coord
+	var gals []aoc.Vec2
 	for y, l := range s {
 		for x, r := range l {
 			if r != '#' {
@@ -69,7 +54,7 @@ func parseMap(s input) ([]coord, []int, []int) {
 			}
 			rowCount[y]++
 			colCount[x]++
-			gals = append(gals, coord{x, y})
+			gals = append(gals, aoc.Vec2{X: x, Y: y})
 		}
 	}
 	return gals, rowCount, colCount
@@ -82,7 +67,7 @@ func runPartOne(s input) error {
 	for i := 0; i < len(gals); i++ {
 		for j := i + 1; j < len(gals); j++ {
 			a, b := gals[i], gals[j]
-			sum += distance(a, b)
+			sum += a.Distance(b)
 			sum += blanksCrossed(a.Y, b.Y, rowCount)
 			sum += blanksCrossed(a.X, b.X, colCount)
 		}
@@ -101,7 +86,7 @@ func runPartTwo(s input) error {
 	for i := 0; i < len(gals); i++ {
 		for j := i + 1; j < len(gals); j++ {
 			a, b := gals[i], gals[j]
-			sum += distance(a, b)
+			sum += a.Distance(b)
 			sum += blanksCrossed(a.Y, b.Y, rowCount) * 999999
 			sum += blanksCrossed(a.X, b.X, colCount) * 999999
 		}
