@@ -36,67 +36,51 @@ var testString1 = `#.##..##.
 #....#..#
 `
 
-func isVerticalReflected(s []string, idx int) int {
+func reflectDistance(s []string, idx int) int {
 	var diff int
 	for _, l := range s {
-		i, j := idx, idx+1
-		for {
-			if i < 0 || j >= len(l) {
-				break
-			}
+		for i, j := idx, idx+1; i >= 0 && j < len(l); i, j = i-1, j+1 {
 			if l[i] != l[j] {
 				diff++
 			}
-			i--
-			j++
 		}
 	}
 	return diff
 }
 
-func isHorizontalReflected(s []string, idx int) int {
-	var diff int
-	i, j := idx, idx+1
-	for {
-		if i < 0 || j >= len(s) {
-			break
+func flipped(b []string) []string {
+	ret := make([]string, len(b[0]))
+	for _, l := range b {
+		for x, r := range l {
+			ret[x] += string(r)
 		}
-		l1, l2 := s[i], s[j]
-		for r := range l1 {
-			if l1[r] != l2[r] {
-				diff++
-			}
-		}
-		i--
-		j++
 	}
-	return diff
+	return ret
 }
 
-func getReflection(b []string, expDiff int) (int, int) {
+func findReflection(b []string, expDiff int) (int, bool) {
 	for i := 0; i < len(b[0])-1; i++ {
-		if isVerticalReflected(b, i) == expDiff {
-			return i + 1, 0
+		if reflectDistance(b, i) == expDiff {
+			return i, true
 		}
 	}
-	for i := 0; i < len(b)-1; i++ {
-		if isHorizontalReflected(b, i) == expDiff {
-			return 0, i + 1
-		}
+	return 0, false
+}
+
+func scoreReflection(b []string, expDiff int) int {
+	if i, ok := findReflection(b, expDiff); ok {
+		return i + 1
 	}
-	return 0, 0
+	if i, ok := findReflection(flipped(b), expDiff); ok {
+		return (i + 1) * 100
+	}
+	panic("no reflection found")
 }
 
 func runPartOne(s input) error {
 	var sum int
 	for _, b := range s {
-		v, h := getReflection(b, 0)
-		if v > 0 {
-			sum += v
-		}
-		if h > 0 {
-			sum += h * 100
-		}
+		sum += scoreReflection(b, 0)
 	}
 	fmt.Println(sum)
 	return nil
@@ -107,13 +91,7 @@ var testString2 = testString1
 func runPartTwo(s input) error {
 	var sum int
 	for _, b := range s {
-		v, h := getReflection(b, 1)
-		if v > 0 {
-			sum += v
-		}
-		if h > 0 {
-			sum += h * 100
-		}
+		sum += scoreReflection(b, 1)
 	}
 	fmt.Println(sum)
 	return nil
