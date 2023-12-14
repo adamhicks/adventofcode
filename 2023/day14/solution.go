@@ -149,7 +149,9 @@ func spinN(m [][]byte, n int) {
 		if v, ok := seen[s]; ok {
 			left := n - spins
 			cycle := spins - v
-			spins = n - (left % cycle)
+			if left > cycle {
+				spins = n - (left % cycle)
+			}
 		} else {
 			seen[s] = spins
 		}
@@ -158,7 +160,7 @@ func spinN(m [][]byte, n int) {
 
 func runPartTwo(s input) error {
 	m := parseMap(s)
-	spinN(m, 1000000000)
+	spinN(m, 1_000_000_000)
 	fmt.Println(score(m))
 	return nil
 }
