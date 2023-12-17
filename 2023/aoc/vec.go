@@ -45,3 +45,15 @@ func (v Vec2) Orthogonal() []Vec2 {
 		{X: v.X, Y: v.Y + 1},
 	}
 }
+
+func (v Vec2) InRange(maxim Vec2) bool {
+	return v.X >= 0 && v.X < maxim.X && v.Y >= 0 && v.Y < maxim.Y
+}
+
+func (v Vec2) TurnLeft() Vec2 {
+	return Vec2{X: v.Y, Y: -v.X}
+}
+
+func (v Vec2) TurnRight() Vec2 {
+	return Vec2{X: -v.Y, Y: v.X}
+}
