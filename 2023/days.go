@@ -20,6 +20,7 @@ import (
 	"github.com/adamhicks/adventofcode/2023/day16"
 	"github.com/adamhicks/adventofcode/2023/day17"
 	"github.com/adamhicks/adventofcode/2023/day18"
+	"github.com/adamhicks/adventofcode/2023/day19"
 )
 
 var daySolutions = map[int]DaySolution{
@@ -41,4 +42,5 @@ var daySolutions = map[int]DaySolution{
 	16: day16.Solution{},
 	17: day17.Solution{},
 	18: day18.Solution{},
+	19: day19.Solution{},
 }
