@@ -7,6 +7,8 @@ var (
 	West  = Vec2{X: -1}
 )
 
+var Cardinals = []Vec2{North, East, South, West}
+
 type Vec2 struct {
 	X, Y int
 }
@@ -56,4 +58,8 @@ func (v Vec2) TurnLeft() Vec2 {
 
 func (v Vec2) TurnRight() Vec2 {
 	return Vec2{X: -v.Y, Y: v.X}
+}
+
+func (v Vec2) Mul(i int) Vec2 {
+	return Vec2{X: v.X * i, Y: v.Y * i}
 }
