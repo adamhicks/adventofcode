@@ -11,8 +11,8 @@ def start():
     if today.month != 12:
         return
     d = today.day
-    if path.exists(day(d)):
-        d = int(input(f"today's solution directory exists, enter a previous day: "))
+    if not path.exists(day(d-1)) or path.exists(day(d)):
+        d = int(input(f"enter a day: "))
     if path.exists(day(d)):
         print(f"day {d} exists already")
         return
