@@ -1,7 +1,6 @@
 import re
 from collections import namedtuple, defaultdict
 from functools import reduce
-from itertools import product
 
 test_input = """p=0,4 v=3,-3
 p=6,3 v=-1,-3

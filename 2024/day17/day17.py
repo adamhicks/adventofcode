@@ -1,5 +1,3 @@
-from itertools import batched
-
 test_input = """Register A: 729
 Register B: 0
 Register C: 0

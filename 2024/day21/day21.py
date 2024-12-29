@@ -1,5 +1,5 @@
 from collections import namedtuple, defaultdict
-from itertools import chain, pairwise
+from itertools import pairwise
 
 test_input = """029A
 980A

@@ -1,5 +1,4 @@
 from collections import namedtuple, defaultdict
-from functools import reduce
 
 test_input = """###############
 #...#...#.....#

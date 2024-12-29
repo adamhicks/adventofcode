@@ -1,6 +1,4 @@
 from collections import namedtuple
-from copy import deepcopy
-from email.policy import default
 from itertools import chain
 
 test_input = """RRRRIICCFF
