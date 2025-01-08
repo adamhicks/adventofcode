@@ -1,5 +1,5 @@
-import os
 from datetime import date
+import os
 from os import path
 import requests
 
@@ -18,13 +18,6 @@ def start():
         return
 
     url = f"https://adventofcode.com/2024/day/{d}"
-    input_url = url + "/input"
-
-    resp = requests.get(input_url, cookies={"session": os.getenv("GITHUB_TOKEN")})
-    if resp.status_code != 200:
-        print("error getting today's problem input:", resp.text)
-
-    input_text = resp.text
 
     with open("run.pytmpl", "r") as f:
         run_py = f.read()
@@ -35,11 +28,31 @@ def start():
     with open(f"{day_dir}/{day_dir}.py", "w") as f:
         f.write(run_py)
 
-    with open(f"{day_dir}/input.txt", "w") as f:
-        f.write(input_text)
-
     print(f"ready to go, good luck!\n{url}")
 
+def fetch_inputs():
+    for i in range(1, 32):
+        day_dir = day(i)
+        if not path.exists(day_dir):
+            continue
+
+        input_file = f"{day_dir}/input.txt"
+        if path.exists(input_file):
+            continue
+
+        url = f"https://adventofcode.com/2024/day/{i}/input"
+        input_url = url + ""
+
+        resp = requests.get(input_url, cookies={"session": os.getenv("GITHUB_TOKEN")})
+        if resp.status_code != 200:
+            print(f"error getting problem input for day {i}: {resp.text}")
+            continue
+
+        with open(f"{day_dir}/input.txt", "w") as f:
+            f.write(resp.text)
+
+        print(f"fetched input for day {i}")
 
 if __name__ == "__main__":
     start()
+    fetch_inputs()

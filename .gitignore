@@ -26,3 +26,6 @@ target
 
 # secret stuff
 .env
+
+# not supposed to commit my personal aoc input
+input.txt
