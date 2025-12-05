@@ -22,7 +22,7 @@ def run_part1(i):
     print(sum(1 for ing_id in ing if any(r for r in rng if r[0] <= ing_id <= r[1])))
 
 def run_part2(i):
-    rng, ing = i
+    rng, _ = i
     merged = []
     prev = None
     for r in sorted(rng):
